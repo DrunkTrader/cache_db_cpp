@@ -1,4 +1,5 @@
 #include "RedisServer.h"
+#include "RedisDatabase.h"
 
 #include <iostream>
 #include <thread>
@@ -16,6 +17,12 @@ int main(int argc, char* argv[]){
             std::this_thread::sleep_for(std::chrono::seconds(300));
             
             //dump the database 
+            if(!RedisDatabase::getInstance().dump("dump.my_rdb")){
+                std::cerr << "Error Dumping Database\n";
+            }
+            else{
+                std::cout << "Database Dumped Successfully\n";
+            }
         }
     });
 

@@ -1,1 +1,4 @@
-.build
+build/
+redis-aurora
+*.o
+*.exe
