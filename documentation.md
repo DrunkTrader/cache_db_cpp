@@ -21,3 +21,27 @@ Cases : 1. if it does not start with '*', it returns an empty vector.
 Working :
  1. It first checks if the command starts with the character '*', which indicates that it is an array of bulk strings in RESP format.
  2. It then reads the number of elements in the array by extracting the substring after '*'
+
+
+#RedisDatabase : Data Structure
+
+Key-Value(K)
+key_value_store["name"] = "Alice";
+key_value_store["city"] = "Berlin";
+
+List (L)
+list_store["fruit"] = {"orange", "strawberry", "mango"};
+list_store["colors"] = {"red", "green", "blue"};
+
+Hash (H)
+hash_store["user:1000"] = {
+    {"name", "Alice"},
+    {"age", "30"},
+    {"city", "Berlin"}
+};
+
+hash_store["user:1001"] = {
+    {"name", "Bob"},
+    {"age", "25"},
+    {"city", "New York"}
+};
