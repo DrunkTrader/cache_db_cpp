@@ -90,10 +90,80 @@ std::string RedisCommandHandler::processCommand(const std::string& commandLine){
         response << "+PONG\r\n";
     }
     else if(cmd == "ECHO"){
-        // ... ECHO message
+        if(tokens.size() < 2){
+            response << "-Error : ECHO requires an argument\r\n";
+        }
+        else {
+            response << "+" << tokens[1] << "\r\n";
+        }
+    }
+    else if(cmd == "FLUSHALL"){
+        //clear all data in the database
+        {
+            db.flushAll();
+            response << "+OK\r\n";
+        }
     }
 
     //key/value commands (SET, GET, DEL, etc.) would go here
+    else if (cmd == "SET"){
+        if(tokens.size() < 3){ // set key value
+            response << "-Error: SET requires key and value\r\n";
+        }
+        else {
+            db.set(tokens[1], tokens[2]);
+            response << "+OK\r\n";
+        }
+    }
+    else if (cmd == "GET"){
+        if(tokens.size() < 2){
+            response << "-Error: GET requires a key\r\n";
+        }
+        else {
+            std::string value;
+
+            if(db.get(tokens[1], value)){
+                response << "$" << value.size() << "\r\n" << value << "\r\n";
+            }
+            else {
+                response << "$-1\r\n";  //null bulk string for non-existent key
+            }
+        }
+    }
+    else if(cmd == "KEYS"){
+        std::vector<std::string> allKeys = db.keys();
+        response << "*" << allKeys.size() << "\r\n";
+        for(const auto &key : allKeys){
+            response << "$" << key.size() << "\r\n" << key << "\r\n";
+        }
+    }
+    else if(cmd == "TYPE"){
+        if(tokens.size() < 2){
+            response << "-Error: TYPE requires key\r\n";
+        }
+        else {
+            response << "+" << db.type(tokens[1]) << "\r\n";
+        }
+    }
+    else if (cmd == "DEL" || cmd == "UNLINK"){
+        if(tokens.size() < 2){
+            response << "Error: " << cmd << " requires key\r\n";
+        }
+        else {
+            bool deleted = db.del(tokens[1]);
+            response << ":" << (deleted ? "1" : "0") << "\r\n"; //integer reply: 1 if key was deleted, 0 if key did not exist
+        }
+    } else if(cmd == "EXPIRE"){
+        if(tokens.size() < 3){  // EXPIRE key seconds
+            response << "-Error: EXPIRE requires key and seconds\r\n";
+        }
+        else {
+            int seconds = std::stoi(tokens[2]);
+            bool success = db.expire(tokens[1], seconds);
+            response << ":" << (success ? "1" : "0") << "\r\n"; //integer reply: 1 if timeout was set, 0 if key does not exist
+
+        }
+    }
     // list operations
     // hash operations
     
