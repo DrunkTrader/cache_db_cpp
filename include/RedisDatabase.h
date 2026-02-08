@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <vector>
 #include <chrono>
+#include <mutex>
 
 class RedisDatabase {
 public:
@@ -22,7 +23,7 @@ public:
     bool del(const std::string &key); //delete a key from the databasem
 
     //expire
-    bool expire(const std::string &key, int seconds); //set a key to expire after a certain number of seconds
+    bool expire(const std::string &key, const std::string &seconds); //set a key to expire after a certain number of seconds
 
     //rename
     bool rename(const std::string &oldKey, const std::string &newKey); //rename a key

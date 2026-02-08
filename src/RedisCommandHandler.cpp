@@ -158,10 +158,18 @@ std::string RedisCommandHandler::processCommand(const std::string& commandLine){
             response << "-Error: EXPIRE requires key and seconds\r\n";
         }
         else {
-            int seconds = std::stoi(tokens[2]);
-            bool success = db.expire(tokens[1], seconds);
-            response << ":" << (success ? "1" : "0") << "\r\n"; //integer reply: 1 if timeout was set, 0 if key does not exist
-
+            if(db.expire(tokens[1], tokens[2])){
+                response << "+OK\r\n";
+            }
+        }
+    } else if(cmd == "RENAME"){
+        if(tokens.size() < 3){  //RENAME oldKey newKey
+            response << "-Error: RENAME requires oldKey and newKey\r\n";
+        }
+        else {
+            if(db.rename(tokens[1], tokens[2])){
+            response << "+OK\r\n";
+            }
         }
     }
     // list operations
